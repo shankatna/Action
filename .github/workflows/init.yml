@@ -1,0 +1,22 @@
+name: test workflow
+on:
+  push:
+    branches:
+      - main 
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test code
+        run: |
+          var=()
+
+           # Add elements to the array
+           var+=("service1")
+           var+=("service2")
+
+           # Convert the array to JSON using jq
+           json_variable=$(printf '%s\n' "${var[@]}" | jq -R -s -c '[split("\n") | map({value: .})]')
+
+           echo $json_variable
+    
