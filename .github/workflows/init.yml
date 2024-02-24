@@ -6,8 +6,11 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    outputs: 
+     jobList: ${{steps.getJobList.outputs.jobList }}
     steps:
       - name: test code
+        id: getJobList
         run: |
           var=()
 
@@ -17,6 +20,17 @@ jobs:
 
            # Convert the array to JSON using jq
            json_variable=$(printf '%s\n' "${var[@]}" | jq -R -s -c '[split("\n") | map({value: .})]')
-
+            echo "jobList=$json_variable" >> $GITHUB_OUTPUT
            echo $json_variable
+  runDbJobs: 
+    runs-on: ubuntu-latest 
+    needs: 
+      - setup 
+    strategy: 
+      matrix: 
+        matrix-value: ${{fromJson(needs.setup.outputs.jobList)}}
+    steps:
+      - name: test job
+        run: | 
+          echo matrix.
     
